@@ -19,6 +19,7 @@ class NgenMap(MapLayout):
     default_map_extent = [-111.677812, 40.244400,-110.892191, 40.712003]
     max_zoom = 16
     min_zoom = 8
+    show_properties_popup = True
 
     def compose_layers(self, request, map_view, *args, **kwargs):
         """
@@ -39,6 +40,7 @@ class NgenMap(MapLayout):
             layer_title='Nexus',
             layer_variable='nexus',
             visible=True,
+            selectable=True,
         )
 
         # Catchments
@@ -52,6 +54,7 @@ class NgenMap(MapLayout):
             layer_title='Catchments',
             layer_variable='catchments',
             visible=True,
+            selectable=True,
         )
 
         # Create layer groups
