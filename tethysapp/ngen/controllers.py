@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+import pandas as pd
 from tethys_sdk.layouts import MapLayout
 from tethys_sdk.routing import controller
 from .app import Ngen as app
@@ -20,6 +21,7 @@ class NgenMap(MapLayout):
     max_zoom = 16
     min_zoom = 8
     show_properties_popup = True
+    plot_slide_sheet = True
 
     def compose_layers(self, request, map_view, *args, **kwargs):
         """
@@ -27,10 +29,10 @@ class NgenMap(MapLayout):
         """
         # Load GeoJSON from files
         data_directory = Path(__file__).parent / 'data'
-        config_dir = data_directory / 'AWI_001' / 'config'
+        config_directory = data_directory / 'AWI_001' / 'config'
         
         # Nexus Points
-        nexus_path = config_dir / 'nexus_reprojected.geojson'
+        nexus_path = config_directory / 'nexus_reprojected.geojson'
         with open(nexus_path) as nf:
             nexus_geojson = json.loads(nf.read())
 
@@ -41,10 +43,11 @@ class NgenMap(MapLayout):
             layer_variable='nexus',
             visible=True,
             selectable=True,
+            plottable=True,
         )
 
         # Catchments
-        catchments_path = config_dir / 'catchments_reprojected.geojson'
+        catchments_path = config_directory / 'catchments_reprojected.geojson'
         with open (catchments_path) as cf:
             catchments_geojson = json.loads(cf.read())
 
@@ -55,6 +58,7 @@ class NgenMap(MapLayout):
             layer_variable='catchments',
             visible=True,
             selectable=True,
+            plottable=True,
         )
 
         # Create layer groups
@@ -97,3 +101,81 @@ class NgenMap(MapLayout):
                 }}
             }},
         }
+
+    def get_plot_for_layer_feature(self, request, layer_name, feature_id, layer_data, feature_props, *args, **kwargs):
+        """
+        Retrieves plot data for given feature on given layer.
+
+        Args:
+            layer_name (str): Name/id of layer.
+            feature_id (str): ID of feature.
+            layer_data (dict): The MVLayer.data dictionary.
+            feature_props (dict): The properties of the selected feature.
+
+        Returns:
+            str, list<dict>, dict: plot title, data series, and layout options, respectively.
+        """
+        output_directory = Path(__file__).parent / 'data' / 'AWI_001' / 'output'
+
+        # Get the feature id
+        id = feature_props.get('id')
+
+        # Nexus
+        if layer_name == 'nexus':
+            layout = {
+                'yaxis': {
+                    'title': 'Streamflow (cms)'
+                }
+            }
+
+            output_path = output_directory / f'{id}_output.csv'
+            if not output_path.exists():
+                print(f'WARNING: no such file {output_path}')
+                return f'No Data Found for Nexus "{id}"', [], layout
+
+            # Parse with Pandas
+            df = pd.read_csv(output_path)
+            data = [
+                {
+                    'name': 'Streamflow',
+                    'mode': 'lines',
+                    'x': df.iloc[:, 1].tolist(),
+                    'y': df.iloc[:, 2].tolist(),
+                    'line': {
+                        'width': 2,
+                        'color': 'blue'
+                    }
+                },
+            ]
+
+            return f'Streamflow at Nexus "{id}"', data, layout
+
+        # Catchments
+        else:
+            layout = {
+                'yaxis': {
+                    'title': 'Evapotranspiration (mm/hr)'
+                }
+            }
+
+            output_path = output_directory / f'{id}.csv'
+            if not output_path.exists():
+                print(f'WARNING: no such file {output_path}')
+                return f'No Data Found for Catchment "{id}"', [], layout
+
+            # Parse with Pandas
+            df = pd.read_csv(output_path)
+            data = [
+                {
+                    'name': 'Evapotranspiration',
+                    'mode': 'lines',
+                    'x': df.iloc[:, 1].tolist(),
+                    'y': df.iloc[:, 2].tolist(),
+                    'line': {
+                        'width': 2,
+                        'color': 'red'
+                    }
+                },
+            ]
+
+            return f'Evapotranspiration at Catchment "{id}"', data, layout
