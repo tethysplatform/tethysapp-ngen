@@ -10,7 +10,7 @@ class Ngen(TethysAppBase):
     description = 'Visualize the next generation water model output.'
     package = 'ngen'  # WARNING: Do not change this value
     index = 'home'
-    icon = f'{package}/images/icon.gif'
+    icon = f'{package}/images/noaa_digital_logo-2022.png'
     root_url = 'ngen'
     color = '#003087'
     tags = ''
