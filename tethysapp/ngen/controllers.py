@@ -17,7 +17,7 @@ class NgenMap(MapLayout):
         'ESRI',
         'Stamen',
     ]
-    default_map_extent = [-111.677812, 40.244400,-110.892191, 40.712003]
+    default_map_extent = [-111.677812, 40.244400, -110.892191, 40.712003]
     max_zoom = 16
     min_zoom = 8
     show_properties_popup = True
@@ -30,7 +30,7 @@ class NgenMap(MapLayout):
         # Load GeoJSON from files
         data_directory = Path(__file__).parent / 'data'
         config_directory = data_directory / 'AWI_001' / 'config'
-        
+
         # Nexus Points
         nexus_path = config_directory / 'nexus_reprojected.geojson'
         with open(nexus_path) as nf:
@@ -48,7 +48,7 @@ class NgenMap(MapLayout):
 
         # Catchments
         catchments_path = config_directory / 'catchments_reprojected.geojson'
-        with open (catchments_path) as cf:
+        with open(catchments_path) as cf:
             catchments_geojson = json.loads(cf.read())
 
         catchments_layer = self.build_geojson_layer(
@@ -66,7 +66,7 @@ class NgenMap(MapLayout):
             self.build_layer_group(
                 id='ngen-features',
                 display_name='NGen Features',
-                layer_control='checkbox',  #  'checkbox' or 'radio'
+                layer_control='checkbox',  # 'checkbox' or 'radio'
                 layers=[
                     nexus_layer,
                     catchments_layer,
