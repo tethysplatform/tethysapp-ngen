@@ -124,7 +124,7 @@ class NgenMap(MapLayout):
         if layer_name == 'nexus':
             layout = {
                 'yaxis': {
-                    'title': 'Streamflow (cms)'
+                    'title': 'Streamflow (cfs)'
                 }
             }
 
@@ -135,12 +135,15 @@ class NgenMap(MapLayout):
 
             # Parse with Pandas
             df = pd.read_csv(output_path)
+            time_col = df.iloc[:, 1]
+            streamflow_cms_col = df.iloc[:, 2]
+            sreamflow_cfs_col = streamflow_cms_col * 35.314 # Convert to cfs
             data = [
                 {
                     'name': 'Streamflow',
                     'mode': 'lines',
-                    'x': df.iloc[:, 1].tolist(),
-                    'y': df.iloc[:, 2].tolist(),
+                    'x': time_col.tolist(),
+                    'y': sreamflow_cfs_col.tolist(),
                     'line': {
                         'width': 2,
                         'color': 'blue'
