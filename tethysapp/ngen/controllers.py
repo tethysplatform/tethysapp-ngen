@@ -6,7 +6,7 @@ from tethys_sdk.routing import controller
 from .app import Ngen as app
 
 
-@controller(name="home")
+@controller(name="home", app_workspace=True)
 class NgenMap(MapLayout):
     app = app
     base_template = 'ngen/base.html'
@@ -23,13 +23,12 @@ class NgenMap(MapLayout):
     show_properties_popup = True
     plot_slide_sheet = True
 
-    def compose_layers(self, request, map_view, *args, **kwargs):
+    def compose_layers(self, request, map_view, app_workspace, *args, **kwargs):
         """
         Add layers to the MapLayout and create associated layer group objects.
         """
         # Load GeoJSON from files
-        data_directory = Path(__file__).parent / 'data'
-        config_directory = data_directory / 'AWI_001' / 'config'
+        config_directory = Path(app_workspace.path) / 'AWI_001' / 'config'
 
         # Nexus Points
         nexus_path = config_directory / 'nexus_reprojected.geojson'
@@ -102,7 +101,8 @@ class NgenMap(MapLayout):
             }},
         }
 
-    def get_plot_for_layer_feature(self, request, layer_name, feature_id, layer_data, feature_props, *args, **kwargs):
+    def get_plot_for_layer_feature(self, request, layer_name, feature_id, layer_data, feature_props, app_workspace,
+                                   *args, **kwargs):
         """
         Retrieves plot data for given feature on given layer.
 
@@ -115,7 +115,7 @@ class NgenMap(MapLayout):
         Returns:
             str, list<dict>, dict: plot title, data series, and layout options, respectively.
         """
-        output_directory = Path(__file__).parent / 'data' / 'AWI_001' / 'output'
+        output_directory = Path(app_workspace.path) / 'AWI_001' / 'output'
 
         # Get the feature id
         id = feature_props.get('id')
