@@ -137,7 +137,7 @@ class NgenMap(MapLayout):
             df = pd.read_csv(output_path)
             time_col = df.iloc[:, 1]
             streamflow_cms_col = df.iloc[:, 2]
-            sreamflow_cfs_col = streamflow_cms_col * 35.314 # Convert to cfs
+            sreamflow_cfs_col = streamflow_cms_col * 35.314  # Convert to cfs
             data = [
                 {
                     'name': 'Streamflow',
