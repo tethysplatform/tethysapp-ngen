@@ -31,7 +31,7 @@ class NgenMap(MapLayout):
         config_directory = Path(app_workspace.path) / 'AWI_001' / 'config'
 
         # Nexus Points
-        nexus_path = config_directory / 'nexus_reprojected.geojson'
+        nexus_path = config_directory / 'nexus_4326.geojson'
         with open(nexus_path) as nf:
             nexus_geojson = json.loads(nf.read())
 
@@ -46,7 +46,7 @@ class NgenMap(MapLayout):
         )
 
         # Catchments
-        catchments_path = config_directory / 'catchments_reprojected.geojson'
+        catchments_path = config_directory / 'catchments_4326.geojson'
         with open(catchments_path) as cf:
             catchments_geojson = json.loads(cf.read())
 
